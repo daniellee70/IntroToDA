@@ -1,0 +1,77 @@
+---
+title: "Economic Dashboard"
+author: "Daniel Lee"
+date: '2022-05-02'
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE, 
+    warning = FALSE,
+    fig.align = "center"
+    )
+
+# Set up
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+# FRED data
+library(eFRED)
+
+# Time series
+library(timetk)
+
+# Interactive visualization
+library(plotly)
+
+api_key <- "11c92c9630cc2c5c83eb5da3b01a59f0"
+set_fred_key(api_key)
+
+# Load functions
+source("../00_scripts/plot_Tseries_with_us_recessions.R")
+source("../00_scripts/wrangle_plot_overall_and_industry_gdp.R")
+
+# Import Data
+market_indicators_fig   <- read_rds("../00_data/fig/market_indicators_fig.rds")
+economic_indicators_fig <- read_rds("../00_data/fig/economic_indicators_fig.rds")
+industry_indicators_fig <- read_rds("../00_data/fig/industry_indicators_fig.rds")
+```
+
+# {.tabset .tabset-fade}
+
+## Market Indicators
+
+```{r}
+ggplotly(market_indicators_fig)
+
+```
+
+## Economic Indicators
+
+```{r}
+ggplotly(economic_indicators_fig)
+```
+
+
+## Industry Indicators
+Overall U.S. Economy versus Individual Industry
+
+How sensitive is your industry to the overall economy? Is it more or less volatile? If less volatile, you may not be so much worry about a recession. In addition, does it lead or lag the overall economy? Changes in the overall economy may help you navigate economic cycles.
+
+```{r fig.height=10, fig.width=10}
+ggplotly(industry_indicators_fig) %>%
+    
+    layout(legend = list(
+        orientation = "h",
+        x = 0.25))
+```
+
+Year-Over-Year Percent Change
+
+NAICS Sector (2-digit code)

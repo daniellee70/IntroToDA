@@ -1,0 +1,62 @@
+---
+title: "Which industries drive New Hampshire's economy?"
+author: "Daniel Lee"
+date: '2022-06-06'
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE, 
+    warning = FALSE,
+    fig.align = "center"
+    )
+
+# Set up
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+# FRED data
+library(eFRED)
+
+# Time series
+library(timetk)
+
+# Interactive visualization
+library(plotly)
+library(tidytext)
+
+# Import Data
+gdp_LQ_tbl <- read_rds("../00_data/gdp_LQ_tbl.rds")
+
+# Source
+source("../00_scripts/plot_LQ.R")
+```
+
+
+
+Many of New Hampshire's primary industries are tourism-related. Its top industries are "Retail Trade," "Real Estate and Rental and Leasing," "Health Care and Social Assistance," "Educational Services," "Wholesale Trade," "Accommodation and Food Services," and "Arts, Entertainment, and Recreation," that order. The data also suggest that New Hampshire has become more like its richer and bigger neighbor, Massachusetts. Some of the high-value-added top industries in Massachusetts grew stronger in New Hampshire last decade. For example, the "Finance and Insurance" industry has become a primary economic driver of New Hampshire. So has the "Professional, Scientific, and Technical Services" industry, although to a lesser extent than the "Finance and Insurance" industry. The "Management of Companies and Enterprises" industry jumped to the third most important industry in 2021 from the 13th in 2020, whether it's a one-year blip or a change in the underlying trend. These industries are what make Massachusetts one of the richest states in the country. It is looking good for New Hampshire!  
+
+
+
+## Location Quotient for New Hampshire and Massachusetts
+The location quotient is a common way to identify major drivers of the economy. The plot identifies major industries by location quotients expressed in dollars with colors and darkness. Dark red represents the primary industries, dark blue the least important, and white in the middle. Move your mouse cursor over the plot for more information. To calculate the measure, the author calculated what an industry's GDP would have been in New Hampshire if it were exactly as important in New Hampshire as in the country as a whole; subtracted this from the industry's actual GDP in New Hampshire; and ranked industries in descending order. The larger an industry's LQ dollar value is, the more critical it is to the State.  
+
+For example, the Finance and Insurance industry produced nearly $6 billion real dollars of goods and services in New Hampshire in 2019. The $6 billion represents $715 million more than the industry would have produced if it was exactly as important in New Hampshire as in the United States. In other words, the industry is New Hampshire's economic engine exporting and bringing income from outside the State. 
+
+```{r fig.width=10}
+gdp_LQ_tbl %>% plot_LQ(is_LQ_dollars = TRUE, include_all_year = TRUE, panel_spacing_dist = 3.5)
+```
+
+
+```{r fig.height=7, fig.width=10, eval = FALSE}
+## Location Quotient: All States for 1997 and 2011
+
+gdp_LQ_tbl %>% plot_LQ(is_LQ_dollars = FALSE, include_all_year = FALSE, panel_spacing_dist = 3)
+```
+

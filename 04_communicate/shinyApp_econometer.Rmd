@@ -1,0 +1,179 @@
+---
+title: "Econometer: Radar for Business"
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: column
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+# Shiny
+library(shiny)
+library(flexdashboard)
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+# Timeseries
+library(lubridate)
+library(timetk)
+
+# Interactive visualization
+library(plotly)
+
+# FRED data
+library(eFRED)
+
+api_key <- "11c92c9630cc2c5c83eb5da3b01a59f0"
+set_fred_key(api_key)
+
+# Load functions
+# Load the function in the local environment using local = TRUE to find Recession_Dates_tbl
+source("../00_scripts/plot_Tseries_with_us_recessions.R", local = TRUE)
+source("../00_scripts/wrangle_plot_overall_and_industry_gdp.R")
+
+# Import Data
+# Market Indicators 
+VIX_tbl                <- read_rds("../00_data/VIX_tbl.rds")
+Treasury10_Yield_tbl   <- read_rds("../00_data/Treasury10_Yield_tbl.rds")
+Yield_Spread_tbl       <- read_rds("../00_data/Yield_Spread_tbl.rds")
+Home_Price_tbl         <- read_rds("../00_data/Home_Price_tbl.rds")
+
+# Economic Indicators - US
+Recession_Dates_tbl    <- read_rds("../00_data/Recession_Dates_tbl.rds")
+Inflation_tbl          <- read_rds("../00_data/Inflation_tbl.rds")
+Unemployment_Rate_tbl  <- read_rds("../00_data/Unemployment_Rate_tbl.rds")
+GDP_Growth_tbl         <- read_rds("../00_data/GDP_Growth_tbl.rds")
+Consumer_Sentiment_tbl <- read_rds("../00_data/Consumer_Sentiment_tbl.rds")
+
+# Industry
+realGDP_states_q_NAICS_tbl <- read_rds("../00_data/realGDP_states_q_NAICS_tbl.rds")
+```
+
+
+
+Column {.sidebar data-width=300}
+-----------------------------------------------------------------------
+
+```{r}
+shinyWidgets::pickerInput(
+  inputId = "industry", 
+  label = "Select State", 
+  choices = unique(realGDP_states_q_NAICS_tbl$place %>% sort()), 
+  options = list(
+    `actions-box` = TRUE, 
+    size = 10,
+    `selected-text-format` = "count > 3"
+  ), 
+  multiple = FALSE
+)
+
+shinyWidgets::pickerInput(
+  inputId = "industry", 
+  label = "Select Industry", 
+  choices = unique(realGDP_states_q_NAICS_tbl$NAICS_desc %>% 
+                       str_trunc(width = 30, side = "right")), 
+  options = list(
+    `actions-box` = TRUE, 
+    size = 10,
+    `selected-text-format` = "count > 3"
+  ), 
+  multiple = FALSE
+)
+
+br()
+hr()
+br()
+
+actionButton("go", "Submit")
+```
+
+
+Column {data-width=700 .tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Markets
+
+```{r}
+# Display all indicators using facet_wrap()
+
+
+VIX_tbl %>% plot_Tseries_with_us_recessions(title = "The Chicago Board Options Exchange Volatility Index", 
+                                            yaxis_title = "Percent")
+
+Treasury10_Yield_tbl %>% plot_Tseries_with_us_recessions(title = "10-YR Treasury Yield",
+                                                         yaxis_title = "Percent")
+
+Yield_Spread_tbl %>% plot_Tseries_with_us_recessions(title = "Treasury Yield Spread between the 10 Year Note and the 3 Month Bill",
+                                                     yaxis_title = "Percent")
+
+Home_Price_tbl %>%
+
+    # Calculate year-over-year change
+    mutate(value = (value/lag(value, n = 12)-1)*100) %>%
+
+    # Plot
+    plot_Tseries_with_us_recessions(title = "S&P/Case-Shiller 20-City Composite Home Price Index",
+                                    yaxis_title = "Year-Over-Year Percent Change")
+```
+
+
+### Economy
+
+```{r}
+
+```
+
+### Industry
+
+```{r}
+
+```
+
+### Other considerations
+
+Producers of intermediate goods should watch consumption of the goods that use their product. A wheat farmer needs to watch bread sales.
+
+A company should monitor its own customers. A wheat farmer needs to watch flour sales. 
+
+Pay a close attention to raw material prices if you are a manufacturer, utility, contractor with significant exposure to one or two raw materials.
+
+A manager should assess risk of a regional recession if the company:
+
+* sells into a local market distinct from the national economy. 
+* produces in a distinct local market and sell into a national or global market.
+
+A company in capital-intensive industries (e.g., real estate, mining, and utilities) should monitor the industry's capital investment. 
+
+
+
+```{r}
+### Options to consider when managing through the recession
+
+
+
+# When expecting a downturn
+
+
+# During a moderate downturn
+
+
+# During a severe recession
+
+
+# During a recovery
+
+
+# During a boom
+
+
+# Add identifying opportunities
+```
+
+
+
+
+
+
